@@ -1,11 +1,10 @@
 package com.ex.messreview.Screens
 
+import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,8 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
@@ -31,13 +31,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +50,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ex.messreview.R
 import com.ex.messreview.data.menuData
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -88,10 +91,10 @@ fun FoodItemList(day: String, mealTime: String, navController: NavHostController
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(9.dp)
-                    .background(MaterialTheme.colorScheme.surface)
                     .clickable {
                         navController.navigate("rating_screen/$menuItem/${R.drawable.foodimg}")
                     },
+                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 shape = MaterialTheme.shapes.medium.copy(all = CornerSize(36.dp))
             ) {
@@ -104,7 +107,7 @@ fun FoodItemList(day: String, mealTime: String, navController: NavHostController
                         painter = painterResource(id = R.drawable.foodimg),
                         contentDescription = "Meal Image",
                         modifier = Modifier
-                            .size(70.dp)
+                            .size(90.dp)
                             .clip(CircleShape)
                             .padding(end = 15.dp),
                         contentScale = ContentScale.Crop
@@ -114,8 +117,9 @@ fun FoodItemList(day: String, mealTime: String, navController: NavHostController
                     ) {
                         Text(
                             text = menuItem,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -139,74 +143,110 @@ fun FoodItemList(day: String, mealTime: String, navController: NavHostController
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
+    val dayListState = rememberLazyListState()
+    val mealListState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            dayListState.scrollToItem(selectedDay)
+            mealListState.scrollToItem(mealTimes.indexOf(selectedMealTime))
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(
+                color = MaterialTheme.colorScheme.background.copy(alpha = 0.6f)
+                    .compositeOver(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+            ),
     ) {
         Text(
             text = "Good Evening User",
             modifier = Modifier.padding(16.dp),
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = MaterialTheme.typography.displaySmall.fontSize,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.displaySmall
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .horizontalScroll(rememberScrollState())
+        LazyRow(
+            state = dayListState,
+            modifier = Modifier.padding(16.dp)
         ) {
-            daysOfWeek.forEachIndexed { index, day ->
+            items(daysOfWeek.size) { index ->
+                val day = daysOfWeek[index]
                 val isSelected = selectedDay == index
-                val buttonColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
-                val buttonShadow by animateDpAsState(targetValue = if (isSelected) 8.dp else 0.dp)
-                val textColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
+                val buttonColor by animateColorAsState(
+                    targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background.copy(alpha = 0.65f)
+                        .compositeOver(MaterialTheme.colorScheme.primary.copy(alpha = 0.45f))
+                )
+                val textColor by animateColorAsState(
+                    targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+                )
 
                 Button(
                     onClick = { selectedDay = index },
                     modifier = Modifier
                         .padding(3.dp)
-                        .shadow(buttonShadow, CircleShape)
                         .background(buttonColor, CircleShape),
                     shape = CircleShape
                 ) {
-                    Text(text = day, color = textColor)
+                    Text(
+                        text = day,
+                        color = textColor,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = MaterialTheme.typography.titleMedium.fontSize
+                    )
                 }
             }
         }
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .horizontalScroll(rememberScrollState())
+
+        LazyRow(
+            state = mealListState,
+            modifier = Modifier.padding(16.dp)
         ) {
-            mealTimes.forEach { mealTime ->
+            items(mealTimes.size) { index ->
+                val mealTime = mealTimes[index]
                 val isSelected = selectedMealTime == mealTime
-                val buttonColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
-                val buttonShadow by animateDpAsState(targetValue = if (isSelected) 8.dp else 0.dp)
-                val textColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
+                val buttonColor by animateColorAsState(
+                    targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background.copy(alpha = 0.65f)
+                        .compositeOver(MaterialTheme.colorScheme.primary.copy(alpha = 0.45f))
+                )
+                val textColor by animateColorAsState(
+                    targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+                )
 
                 Button(
                     onClick = { selectedMealTime = mealTime },
                     modifier = Modifier
                         .padding(3.dp)
-                        .shadow(buttonShadow, CircleShape)
                         .background(buttonColor, CircleShape),
                     shape = CircleShape
                 ) {
-                    Text(text = mealTime, color = textColor)
+                    Text(
+                        text = mealTime,
+                        color = textColor,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = MaterialTheme.typography.titleMedium.fontSize
+                    )
                 }
             }
         }
+
         if (selectedDay > -1) {
             FoodItemList(day = daysOfWeek[selectedDay], mealTime = selectedMealTime, navController = navController)
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
 fun HomeScreenPreview() {
     val navController = rememberNavController()

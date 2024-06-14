@@ -1,14 +1,24 @@
 package com.ex.messreview.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.ex.messreview.R
+
+// Set of Material typography styles to start with
+val robotoFamily = FontFamily(
+    Font(R.font.roboto_regular, FontWeight.Normal),
+    Font(R.font.roboto_bold, FontWeight.Bold),
+    Font(R.font.roboto_italic, FontWeight.Normal, androidx.compose.ui.text.font.FontStyle.Italic)
+)
 
 // Set of Material typography styles to start with
 val Typography = Typography(
-    bodyLarge = androidx.compose.ui.text.TextStyle(
-        fontFamily = FontFamily.Default,
+    bodyLarge = TextStyle(
+        fontFamily = robotoFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -50,8 +51,6 @@ fun RatingScreen(itemName: String, imageResId: Int) {
             .fillMaxSize()
             .padding(16.dp)
             .background(MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
             modifier = Modifier
@@ -63,10 +62,10 @@ fun RatingScreen(itemName: String, imageResId: Int) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
-                    .shadow(4.dp, RoundedCornerShape(8.dp))
-                    .background(Color(0x80FFFFFF)),
-                shape = RoundedCornerShape(8.dp),
+                    .padding(10 .dp)
+                    .shadow(4.dp, RoundedCornerShape(36.dp)),
+                shape = RoundedCornerShape(36.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -78,7 +77,7 @@ fun RatingScreen(itemName: String, imageResId: Int) {
                         modifier = Modifier
                             .height(100.dp)
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(24.dp))
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
@@ -101,9 +100,9 @@ fun RatingScreen(itemName: String, imageResId: Int) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .shadow(4.dp, RoundedCornerShape(8.dp))
-                    .background(Color(0x80FFFFFF)),
-                shape = RoundedCornerShape(8.dp),
+                    .shadow(4.dp, RoundedCornerShape(36.dp)),
+                shape = RoundedCornerShape(36.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -120,9 +119,9 @@ fun RatingScreen(itemName: String, imageResId: Int) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .shadow(4.dp, RoundedCornerShape(8.dp))
-                    .background(Color(0x80FFFFFF)),
-                shape = RoundedCornerShape(8.dp),
+                    .shadow(4.dp, RoundedCornerShape(36.dp)),
+                shape = RoundedCornerShape(36.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),

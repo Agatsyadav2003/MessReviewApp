@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,11 +24,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,29 +44,35 @@ fun OverallRatingScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(
+                color = MaterialTheme.colorScheme.background.copy(alpha = 0.6f)
+                    .compositeOver(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+            )
     ) {
         Spacer(modifier = Modifier.height(15.dp))
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.4f),
-            text = "Review",
-            fontWeight = FontWeight.SemiBold,
-            style = MaterialTheme.typography.displaySmall,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
+//        Text(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .weight(0.5f),
+//            text = "Review",
+//            fontWeight = FontWeight.SemiBold,
+//            style = MaterialTheme.typography.displaySmall,
+//            textAlign = TextAlign.Center,
+//            color = MaterialTheme.colorScheme.onBackground,
+//        )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(4f)
+                .weight(5f)
         ) {
             ReviewCard(text = "Breakfast", modifier = Modifier.weight(0.75f))
+            Spacer(modifier = Modifier.height(5.dp))
             ReviewCard(text = "Lunch", modifier = Modifier.weight(0.75f))
+            Spacer(modifier = Modifier.height(5.dp))
             ReviewCard(text = "High Tea", modifier = Modifier.weight(0.75f))
+            Spacer(modifier = Modifier.height(5.dp))
             ReviewCard(text = "Dinner", modifier = Modifier.weight(0.75f))
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(5.dp))
             Button(
                 onClick = { /*TODO*/ },
                 modifier = Modifier
@@ -89,37 +101,41 @@ fun OverallRatingScreen() {
 fun ReviewCard(text: String, modifier: Modifier) {
     var selectedStars by remember { mutableStateOf(0) }
 
-    Box(
+    Card(
         modifier = modifier
             .padding(horizontal = 30.dp, vertical = 15.dp)
-            .background(
-                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
-                shape = MaterialTheme.shapes.large
-            )
-            .clickable(onClick = { selectedStars = 0 })
+            .clickable(onClick = { selectedStars = 0 }),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = MaterialTheme.shapes.medium.copy(all = CornerSize(36.dp)),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface)
+
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = text,
-                fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.3f)
+                    .padding(5.dp)
             )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.5f)
+                    .weight(2f)
+                    .padding(10.dp)
             ) {
                 repeat(5) {
                     StarButton(
                         isSelected = it < selectedStars,
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 4.dp)
+                            .weight(0.5f)
+
+                            .align(Alignment.CenterVertically)
+
                     ) {
                         selectedStars = if (it == selectedStars) 0 else it + 1
                     }
@@ -139,17 +155,17 @@ fun StarButton(isSelected: Boolean, modifier: Modifier, onClick: () -> Unit) {
 
     Box(
         modifier = modifier
-            .padding(0.1.dp)
+
             .background(
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0f),
-                shape = MaterialTheme.shapes.large
+                shape = MaterialTheme.shapes.extraLarge
             )
             .clickable(onClick = onClick)
     ) {
         Icon(
             painter = starIcon,
             contentDescription = if (isSelected) "Filled Star" else "Outlined Star",
-            tint = if (isSelected) Color.Yellow else Color.Black,
+            tint = if (isSelected) Color.Yellow else MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.align(Alignment.Center)
         )
     }
