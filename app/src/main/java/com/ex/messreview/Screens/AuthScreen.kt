@@ -63,10 +63,10 @@ fun AuthScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.messreviewlogo),
+            painter = painterResource(id = R.drawable.applogo),
             contentDescription = "logo",
             modifier = Modifier
-                .fillMaxWidth(0.5f) // Adjust the logo size as a proportion of the screen width
+                .fillMaxWidth(0.65f) // Adjust the logo size as a proportion of the screen width
                 .aspectRatio(1f) // Maintain aspect ratio
         )
         Spacer(modifier = Modifier.height(30.dp))
