@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,11 +50,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ex.messreview.R
+import com.ex.messreview.SharedViewModel
 import com.ex.messreview.data.menuData
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
-
+import androidx.compose.runtime.livedata.observeAsState
 val currentDayIndex = LocalDate.now().dayOfWeek.value % 7
 
 val currentMealTime = when (LocalTime.now()) {
@@ -69,8 +71,12 @@ val mealTimes = listOf("Breakfast", "Lunch", "High Tea", "Dinner")
 var selectedMealTime by mutableStateOf(currentMealTime)
 
 @Composable
-fun FoodItemList(day: String, mealTime: String, navController: NavHostController) {
-    val menuItems = menuData[day]?.get(mealTime) ?: listOf()
+fun FoodItemList(day: String, mealTime: String, navController: NavHostController,menuData: Map<String, Map<String, List<String>>>,sharedViewModel: SharedViewModel) {
+    var menuItems by remember { mutableStateOf(listOf<String>()) }
+    val messType by sharedViewModel.messType.observeAsState(null)
+
+
+    menuItems = menuData[day]?.get(mealTime) ?: listOf()
 
     LazyColumn(
         contentPadding = PaddingValues(16.dp)
@@ -92,7 +98,7 @@ fun FoodItemList(day: String, mealTime: String, navController: NavHostController
                     .fillMaxWidth()
                     .padding(9.dp)
                     .clickable {
-                        navController.navigate("rating_screen/$menuItem/${R.drawable.foodimg}")
+                        navController.navigate("rating_screen/$menuItem/${R.drawable.foodimg}/$messType-$day-$mealTime")
                     },
                 colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -125,7 +131,7 @@ fun FoodItemList(day: String, mealTime: String, navController: NavHostController
                     }
                     IconButton(
                         onClick = {
-                            navController.navigate("rating_screen/$menuItem/${R.drawable.foodimg}")
+                            navController.navigate("rating_screen/$menuItem/${R.drawable.foodimg}/$messType-$day-$mealTime")
                         },
                         modifier = Modifier.padding(start = 16.dp)
                     ) {
@@ -142,7 +148,10 @@ fun FoodItemList(day: String, mealTime: String, navController: NavHostController
 }
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController,sharedViewModel: SharedViewModel) {
+    val username by sharedViewModel.username.observeAsState("User")
+
+    val menuData by sharedViewModel.menuData.observeAsState(emptyMap())
     val dayListState = rememberLazyListState()
     val mealListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -163,7 +172,7 @@ fun HomeScreen(navController: NavHostController) {
             ),
     ) {
         Text(
-            text = "Good Evening User",
+            text = "Good Evening $username",
             modifier = Modifier.padding(16.dp),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = MaterialTheme.typography.displaySmall.fontSize,
@@ -237,18 +246,9 @@ fun HomeScreen(navController: NavHostController) {
         }
 
         if (selectedDay > -1) {
-            FoodItemList(day = daysOfWeek[selectedDay], mealTime = selectedMealTime, navController = navController)
+            FoodItemList(day = daysOfWeek[selectedDay], mealTime = selectedMealTime, navController = navController,menuData = menuData,sharedViewModel)
         }
     }
 }
 
-@Preview(
-    name = "Dark Mode",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-fun HomeScreenPreview() {
-    val navController = rememberNavController()
-    HomeScreen(navController)
-}
+

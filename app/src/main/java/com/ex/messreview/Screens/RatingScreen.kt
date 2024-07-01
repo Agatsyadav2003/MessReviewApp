@@ -38,10 +38,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ex.messreview.R
+import com.google.firebase.database.FirebaseDatabase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RatingScreen(itemName: String, imageResId: Int) {
+fun RatingScreen(itemName: String, imageResId: Int,username:String,itemInfo:String?) {
     var currentRating by remember { mutableStateOf(3) }
     var userRating by remember { mutableStateOf(0) }
     var reviewText by remember { mutableStateOf("") }
@@ -141,7 +142,11 @@ fun RatingScreen(itemName: String, imageResId: Int) {
 
         // Submit Button
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { val database = FirebaseDatabase.getInstance().reference
+                val itemRef = database.child("items").child("$itemInfo").child(itemName)
+
+                itemRef.child("reviews").child(username).setValue(reviewText)
+                itemRef.child("ratings").child(username).setValue(userRating)},
             modifier = Modifier
                 .padding(16.dp)
                 .height(49.dp)
@@ -179,8 +184,4 @@ fun RatingBar(rating: Int, onRatingChanged: ((Int) -> Unit)? = null) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ReviewPreview() {
-    RatingScreen(itemName = "Item 1", imageResId = R.drawable.foodimg)
-}
+
