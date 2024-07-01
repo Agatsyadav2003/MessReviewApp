@@ -2,6 +2,7 @@
 
 package com.ex.messreview.Screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -43,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ex.messreview.R
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +55,7 @@ fun AuthScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -77,7 +80,15 @@ fun AuthScreen(
         }
         Spacer(modifier = Modifier.height(30.dp))
         Button(
-            onClick = { onLoginClicked(username, password) },
+            onClick = {  val email = formatUsername(username)
+                FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            onLoginClicked(username, password)
+                        } else {
+                            Toast.makeText(context, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                        }
+                    }},
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .aspectRatio(3f) // Maintain aspect ratio
@@ -88,7 +99,13 @@ fun AuthScreen(
         }
     }
 }
-
+fun formatUsername(username: String): String {
+    return if (username.matches(Regex("21bce\\d{4}"))) {
+        "$username@gmail.com"
+    } else {
+        username
+    }
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserTextField(value: String, onValueChange: (String) -> Unit) {
@@ -142,6 +159,4 @@ fun PasswordField(
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginPreview() = AuthScreen(onLoginClicked = { _, _ -> })
+

@@ -16,12 +16,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.ex.messreview.Screens.*
-
+import com.ex.messreview.SharedViewModel
+import androidx.compose.runtime.livedata.observeAsState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(sharedViewModel: SharedViewModel) {
     val navController: NavHostController = rememberNavController()
-
+    val username1 by sharedViewModel.username.observeAsState("User")
     Scaffold(
         bottomBar = {
             val navBackStackEntry: NavBackStackEntry? by navController.currentBackStackEntryAsState()
@@ -64,40 +65,39 @@ fun AppNavigation() {
         ) {
             composable("login") {
                 AuthScreen { username, password ->
-                    // Handle login logic here and navigate to Home
+                    sharedViewModel.login(username)
                     navController.navigate(Screens.StudentHome.name) {
                         popUpTo("login") { inclusive = true }
                     }
                 }
             }
             composable(route = Screens.StudentHome.name) {
-                HomeScreen(navController = navController)
+                HomeScreen(navController = navController,sharedViewModel)
             }
             composable(route = Screens.OverallRating.name) {
-                OverallRatingScreen()
+                OverallRatingScreen(sharedViewModel)
             }
             composable(route = Screens.ProfileScreen.name) {
-                ProfileScreen()
+                ProfileScreen(sharedViewModel)
             }
             composable(
-                route = "rating_screen/{itemName}/{imageResId}",
+                route = "rating_screen/{itemName}/{imageResId}/{itemInfo}",
                 arguments = listOf(
                     navArgument("itemName") { type = NavType.StringType },
-                    navArgument("imageResId") { type = NavType.IntType }
+                    navArgument("imageResId") { type = NavType.IntType },
+                    navArgument("itemInfo") { type = NavType.StringType }
+
                 )
             ) { backStackEntry ->
                 val itemName = backStackEntry.arguments?.getString("itemName")
                 val imageResId = backStackEntry.arguments?.getInt("imageResId")
+                val itemInfo = backStackEntry.arguments?.getString("itemInfo")
                 if (itemName != null && imageResId != null) {
-                    RatingScreen(itemName = itemName, imageResId = imageResId)
+                    RatingScreen(itemName = itemName, imageResId = imageResId,username=username1,itemInfo=itemInfo)
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun NavPreview() {
-    AppNavigation()
-}
+

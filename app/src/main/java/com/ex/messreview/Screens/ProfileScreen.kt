@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,9 +29,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ex.messreview.R
-
+import com.ex.messreview.SharedViewModel
+import androidx.compose.runtime.livedata.observeAsState
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(sharedViewModel: SharedViewModel) {
+    val username by sharedViewModel.username.observeAsState("User")
+    val messType by sharedViewModel.messType.observeAsState(null)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -69,7 +73,7 @@ fun ProfileScreen() {
                     modifier = Modifier.size(30.dp)
                 )
                 Spacer(modifier = Modifier.width(5.dp))
-                Text(text = "21BCE1902", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "$username", style = MaterialTheme.typography.bodyLarge)
                 Spacer(modifier = Modifier.weight(0.1f)) // Expands space between icons
                 Icon(
                     imageVector = Icons.Filled.Home, // Replace with appropriate icon
@@ -77,7 +81,7 @@ fun ProfileScreen() {
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "SRRC", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "$messType", style = MaterialTheme.typography.bodyLarge)
             }
         }
     }
@@ -85,8 +89,3 @@ fun ProfileScreen() {
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun profilePreview() {
-    ProfileScreen()
-}
