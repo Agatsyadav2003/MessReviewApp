@@ -41,7 +41,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ex.messreview.R
@@ -80,15 +79,19 @@ fun AuthScreen(
         }
         Spacer(modifier = Modifier.height(30.dp))
         Button(
-            onClick = {  val email = formatUsername(username)
-                FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            onLoginClicked(username, password)
-                        } else {
-                            Toast.makeText(context, "Authentication failed.", Toast.LENGTH_SHORT).show()
-                        }
-                    }},
+            onClick = {
+                if (username.isEmpty() || password.isEmpty()) {Toast.makeText(context, "Enter Credentials", Toast.LENGTH_SHORT).show()}
+                else {
+                    val email = formatUsername(username)
+                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                onLoginClicked(username, password)
+                            } else {
+                                Toast.makeText(context, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                            }
+                        }}
+                      },
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .aspectRatio(3f) // Maintain aspect ratio
