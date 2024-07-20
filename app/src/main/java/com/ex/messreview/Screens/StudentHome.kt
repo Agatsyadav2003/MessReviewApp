@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.ex.messreview.R
 import com.ex.messreview.SharedViewModel
+import com.ex.messreview.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
@@ -212,7 +213,9 @@ fun FoodItemList(day: String, mealTime: String, navController: NavHostController
 }
 
 @Composable
-fun HomeScreen(navController: NavHostController,sharedViewModel: SharedViewModel) {
+fun HomeScreen(navController: NavHostController,sharedViewModel: SharedViewModel, authViewModel: AuthViewModel) {
+    val username1 = authViewModel.getCurrentUsername()
+    sharedViewModel.login(username1?:"")
     val username by sharedViewModel.username.observeAsState("User")
 
     val menuData by sharedViewModel.menuData.observeAsState(emptyMap())

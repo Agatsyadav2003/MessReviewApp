@@ -13,28 +13,42 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.ex.messreview.R
 import com.ex.messreview.SharedViewModel
-import androidx.compose.runtime.livedata.observeAsState
+import com.ex.messreview.viewmodel.AuthState
+import com.ex.messreview.viewmodel.AuthViewModel
+
 @Composable
-fun ProfileScreen(sharedViewModel: SharedViewModel) {
+fun ProfileScreen(sharedViewModel: SharedViewModel, authViewModel: AuthViewModel, navController: NavHostController) {
     val username by sharedViewModel.username.observeAsState("User")
     val messType by sharedViewModel.messType.observeAsState(null)
+    val authState = authViewModel.authState.observeAsState()
+    LaunchedEffect(authState.value) {
+        when(authState.value){
+            is AuthState.Unauthenticated -> navController.navigate("login")
+            else -> Unit
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -82,6 +96,25 @@ fun ProfileScreen(sharedViewModel: SharedViewModel) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = "$messType", style = MaterialTheme.typography.bodyLarge)
+            }
+            Button(
+                onClick = {authViewModel.signout()},
+                modifier = Modifier
+                    .width(145.dp)
+                    .height(49.dp)
+
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(25.dp)
+                    )
+                    .clip(RoundedCornerShape(30.dp))
+                    .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+            ) {
+                Text(
+                    "Submit",
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize
+                )
             }
         }
     }
