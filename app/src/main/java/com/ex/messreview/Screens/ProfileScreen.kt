@@ -2,6 +2,7 @@ package com.ex.messreview.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.ex.messreview.R
@@ -78,25 +80,53 @@ fun ProfileScreen(sharedViewModel: SharedViewModel, authViewModel: AuthViewModel
                 .weight(1f)
             // Occupies 1/3rd of the screen height
         ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp)
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp).align(Alignment.Center)
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = "User Icon",
-                    modifier = Modifier.size(30.dp)
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(text = "$username", style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.weight(0.1f)) // Expands space between icons
-                Icon(
-                    imageVector = Icons.Filled.Home, // Replace with appropriate icon
-                    contentDescription = "Mess Icon",
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "$messType", style = MaterialTheme.typography.bodyLarge)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    Arrangement.Center
+                ){
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "User Icon",
+                        modifier = Modifier.size(30.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = username,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                        )
+                }
+                Spacer(modifier = Modifier.height(50.dp)) // Expands space between icons
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    Arrangement.Center
+                ){
+                    Icon(
+                        imageVector = Icons.Filled.Home, // Replace with appropriate icon
+                        contentDescription = "Mess Icon",
+                        modifier = Modifier.size(30.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "$messType",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
+        }
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .weight(0.5f),
+            contentAlignment = Alignment.Center
+            )
+
+        {
             Button(
                 onClick = {authViewModel.signout()},
                 modifier = Modifier
@@ -111,7 +141,7 @@ fun ProfileScreen(sharedViewModel: SharedViewModel, authViewModel: AuthViewModel
                     .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
             ) {
                 Text(
-                    "Submit",
+                    "Sign-Out",
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = MaterialTheme.typography.titleMedium.fontSize
                 )
@@ -119,6 +149,3 @@ fun ProfileScreen(sharedViewModel: SharedViewModel, authViewModel: AuthViewModel
         }
     }
 }
-
-
-
